@@ -5,6 +5,12 @@ import { NextApiRequest, NextApiResponse } from 'next';
  * Used to verify API is running and R2 is accessible
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  // Set security headers
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }

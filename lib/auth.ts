@@ -52,20 +52,26 @@ export function getClientIP(req: NextApiRequest): string {
 }
 
 /**
- * Validate request origin (basic CORS check)
+ * Validate request origin (enhanced CORS check)
  * @param req - Next.js API request
  * @returns boolean - Whether origin is allowed
  */
 export function validateOrigin(req: NextApiRequest): boolean {
   const origin = req.headers.origin;
+  const userAgent = req.headers['user-agent'] || '';
+  
+  // Allow requests without origin (mobile apps)
+  if (!origin) {
+    // Additional validation for mobile apps
+    return userAgent.includes('Expo') || userAgent.includes('ReactNative');
+  }
+  
   const allowedOrigins = [
     'exp://localhost:8081', // Expo development
     'exp://192.168.1.100:8081', // Expo development (local network)
     'courtai://', // Custom scheme
   ];
   
-  // Allow requests without origin (mobile apps)
-  if (!origin) return true;
-  
-  return allowedOrigins.some(allowed => origin.includes(allowed));
+  // Strict origin validation
+  return allowedOrigins.some(allowed => origin === allowed);
 }

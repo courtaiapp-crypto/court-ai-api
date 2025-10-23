@@ -33,11 +33,19 @@ export async function getSignedUrl(key: string, expiresIn: number = 3600): Promi
 }
 
 /**
- * Validate video path format
+ * Validate video path format (enhanced security)
  * @param path - The video path to validate
  * @returns boolean - Whether the path is valid
  */
 export function validateVideoPath(path: string): boolean {
+  // Security checks
+  if (!path || typeof path !== 'string') return false;
+  
+  // Prevent path traversal attacks
+  if (path.includes('..') || path.includes('//') || path.startsWith('/')) {
+    return false;
+  }
+  
   // Allow only video files in specific directories
   const allowedExtensions = ['.mp4', '.mov', '.avi', '.webm'];
   const allowedDirectories = ['videos/', 'shooting/', 'ball-handling/', 'stepback/', 'defense/', 'athletic/'];
@@ -45,5 +53,8 @@ export function validateVideoPath(path: string): boolean {
   const hasValidExtension = allowedExtensions.some(ext => path.toLowerCase().endsWith(ext));
   const hasValidDirectory = allowedDirectories.some(dir => path.startsWith(dir));
   
-  return hasValidExtension && hasValidDirectory;
+  // Additional length check
+  const isValidLength = path.length > 0 && path.length < 200;
+  
+  return hasValidExtension && hasValidDirectory && isValidLength;
 }
