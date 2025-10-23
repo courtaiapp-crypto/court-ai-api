@@ -60,10 +60,10 @@ export function validateOrigin(req: NextApiRequest): boolean {
   const origin = req.headers.origin;
   const userAgent = req.headers['user-agent'] || '';
   
-  // Allow requests without origin (mobile apps)
+  // Allow requests without origin (mobile apps and curl)
   if (!origin) {
-    // Additional validation for mobile apps
-    return userAgent.includes('Expo') || userAgent.includes('ReactNative');
+    // Allow mobile apps and curl requests
+    return userAgent.includes('Expo') || userAgent.includes('ReactNative') || userAgent.includes('curl');
   }
   
   const allowedOrigins = [
